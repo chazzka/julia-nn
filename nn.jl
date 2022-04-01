@@ -4,14 +4,13 @@ mutable struct Neuron
     result::Float64
 end
 
-mutable struct NeuralNetwork
-    structure::Array{Int64,1}
-    layers::Array{Layer,1}   # array of layers
-end
-
-
 mutable struct Layer
     neurons::Array{Neuron,1}
+end
+
+mutable struct NeuralNetwork
+    structure::Array{Int64,1}
+    layers::Array{Layer,1}
 end
 
 function relu(x)
@@ -22,43 +21,53 @@ function constant(x)
     return x
 end
 
-function initNeuron(activation::Function, input = 0.0, weight = 1.0)
+function initNeuron(activation::Function, input=0.0, weight=1.0)
     neuron = Neuron((input, weight), activation, 0)
     return neuron
 end
 
 function initNetwork(structure::Array{Int64,1})
 
-    # layers = []
-    # for num in structure
-    #     neuron = initNeuron(relu)
-    #     arr = map(_ -> neuron, 1:num)
-    #     push!(layers, arr)
-    # end
-
-
-    # TODO:
-    # input layer
-    layer = map(initNeuron(constant, 0, 1), structure[1])
-    # hidden layer
-    layer = map(initNeuron(relu, 0, 1), structure[2])
-    # output layer
-    layer = map(initNeuron(relu, 0, 1), structure[3])
-    
+    layers = []
     nn = NeuralNetwork(structure, layers)
+
+    input_layer = Layer(map(_ -> initNeuron(constant, 0, 1), 1:structure[1]))  # make this real inputs
+    push!(layers, input_layer)
+
+    hidden_layer = Layer(map(_ -> initNeuron(relu, 0, 1), 1:structure[2]))
+    push!(layers, hidden_layer)
+
+    output_layer = Layer(map(_ -> initNeuron(relu, 0, 1), 1:structure[3]))
+    push!(layers, output_layer)
+
+    nn.layers = layers
 
     return nn
 end
 
 
-function feedforward(neuron::Neuron)
-    return neuron.activation(reduce(*, neuron.input_weight_pair))
+function neuron_ff(input::Number, weight::Number)
+    return input * weight
 end
 
-net.layers
+function layer_ff(inputs::Array, weights::Array)
+    return reduce(+, map(neuron_ff, inputs, weights))
+end
 
-x = map(feedforward, net.layers[1])
+
+
+
+
+
+nn = initNetwork([2, 3, 1])
+nn.layers[1]
+
+layer_ff([1.0,2.0], [1.0,2.0])
+
+layer_ff([1.0,2.0], [1.0,2.0])
+
+println(s)
+
 
 #s = map(tuto funkci, aplikuj na vsechny tyto prvky)
 
-la = Layer([initNeuron(relu),initNeuron(relu)])
