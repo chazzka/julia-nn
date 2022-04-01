@@ -41,9 +41,9 @@ function initNetwork(structure::Array{Int64,1})
     # input layer
     layer = map(initNeuron(constant, 0, 1), structure[1])
     # hidden layer
-    layer = map(initNeuron(relu, 0, 1), structure[1])
-    # output layer
     layer = map(initNeuron(relu, 0, 1), structure[2])
+    # output layer
+    layer = map(initNeuron(relu, 0, 1), structure[3])
     
     nn = NeuralNetwork(structure, layers)
 
